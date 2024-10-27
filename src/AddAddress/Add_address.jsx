@@ -1,6 +1,8 @@
 import React from "react";
 import "./Add_Address.css";
 import { useFormik } from "formik";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const initialFormValues = {
   name: "",
@@ -10,8 +12,18 @@ const initialFormValues = {
 };
 
 export default function Add_address() {
+  const nav = useNavigate();
+
   const { values, handleChange, handleBlur, handleSubmit } = useFormik({
     initialValues: initialFormValues,
+    onSubmit: async (values) => {
+      try {
+        await axios.post("http://localhost:8000/addressbook", values);
+        nav("/");
+      } catch (error) {
+        console.log(error);
+      }
+    },
   });
 
   return (

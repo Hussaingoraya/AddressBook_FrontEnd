@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Address_lists.css";
 import {
   PencilSquare,
@@ -6,35 +6,68 @@ import {
   PlusCircleFill,
   JournalText,
 } from "react-bootstrap-icons";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Address_lits() {
+  const nav = useNavigate();
+  const [addressData, setAddressData] = useState([]);
+  useEffect(() => {
+    const getAddressData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/addressbook");
+        setAddressData(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getAddressData();
+  }, []);
+  const addressForm = () => {
+    nav("/add");
+  };
+  const deleteAddress = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/addressbook/${id}`
+      );
+      setAddressData(addressData.filter((address) => address._id !== id));
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className="title">Address Book</div>
       <div className="container d-flex flex-row m-3">
-        <h2 className=" m-1">
+        <h2 className=" icons m-1">
           <JournalText />
         </h2>
-        <h2 className="p-2 m-1">
-          <PlusCircleFill />
+        <h2 className=" icons m-1">
+          <PlusCircleFill onClick={addressForm} />
         </h2>
       </div>
-      <div className="card m-3 ">
-        <div className="card-body">
-          <h5 className="card-title">Name : Hussain</h5>
-          <h5 className="card-text">Email : hussaingoraya982@gmail.com</h5>
-          <h5 className="card-text">Contact : 0304-4809243</h5>
-          <h5 className="card-text">Address : Gujranwala</h5>
-          <div className=" d-flex flex-row ">
-            <h2 className=" m-1">
-              <Trash />
-            </h2>
-            <h2 className=" m-1">
-              <PencilSquare />
-            </h2>
+      {addressData.map((address) => (
+        <div className="card m-3 " key={address._id}>
+          <div className="card-body">
+            <h5 className="card-title">Name : {address.name}</h5>
+            <h5 className="card-text">Email : {address.email}</h5>
+            <h5 className="card-text">Contact : {address.contact}</h5>
+            <h5 className="card-text">Address : {address.address}</h5>
+            <div className=" d-flex flex-row ">
+              <h2 className="icons m-1">
+                <Trash onClick={() => deleteAddress(address._id)} />
+              </h2>
+              <h2 className="icons m-1">
+                <PencilSquare />
+              </h2>
+            </div>
           </div>
         </div>
-      </div>
+      ))}
     </>
   );
 }

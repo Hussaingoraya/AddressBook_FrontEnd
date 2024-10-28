@@ -5,3 +5,12 @@
 .icons{
     cursor: pointer;
 }
+.edit-icon{
+    color: blue;
+}
+.trash-icon{
+    color: red;
+}
+.add-icon{
+    color: green;
+}
